@@ -58,7 +58,9 @@ var shortHistory *autog.PromptItem =  &autog.PromptItem{
 		// HTML太大，不能完整的送给大模型，所以这里进行RAG增强检索，因为页面会刷新，所以每次都重新间索引
 		ShowAgentLog(1, fmt.Sprintf("Indexing HTML...\n"))
 
-		splitter := &rag.TextSplitter{}
+		splitter := &rag.TextSplitter{
+			ChunkSize : 8192,
+		}
 		err := chromeAgent.Rag.Indexing(cxt, "/html", GetHtmlContext(), splitter, true)
 		if err != nil {
 			ShowAgentLog(-1, fmt.Sprintf("RAG Indexing ERROR: %s\n", err))
@@ -73,7 +75,7 @@ var shortHistory *autog.PromptItem =  &autog.PromptItem{
 			return msgs
 		}
 
-		content := "HTML:\n"
+		content := "请基于以下内容进行回答，你的所有操作来源仅限于如下HTML内容和我的提问内容，不允许进行任何假设!!!我的问题将在下一条消息中发给你!\nHTML:\n"
 		for _, scoreds := range scoredss {
 			for _, scored := range scoreds {
 				content += fmt.Sprintf("...\n%s\n...\n", scored.Chunk.GetContent())
@@ -83,6 +85,7 @@ var shortHistory *autog.PromptItem =  &autog.PromptItem{
 		ShowAgentLog(1, fmt.Sprintf("Sending...\n"))
 
 		msgs = append(msgs, autog.ChatMessage{Role:autog.ROLE_USER, Content: content})
+		msgs = append(msgs, autog.ChatMessage{Role:autog.ROLE_ASSISTANT, Content: "OK"})
 		return msgs
 	},
 }

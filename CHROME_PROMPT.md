@@ -105,6 +105,7 @@ func (c *Chrome) RunTasks(fun func (ctx context.Context) error) string {
 package main
 
 import "fmt"
+import "os"
 import "context"
 import "time"
 import "github.com/chromedp/chromedp"
@@ -112,6 +113,7 @@ import "github.com/chromedp/chromedp/kb"
 import "chrome"
 
 func unused() {
+	fmt.Println(os.Getenv("PATH"))
 	fmt.Println(kb.Enter)
 	time.Sleep(1*time.Second)
 }
@@ -177,6 +179,46 @@ err := chromedp.Run(ctx,
 	chromedp.SetValue(`//*[@id="searchBar"]`, "", chromedp.BySearch),
 	// 从问题中得到的内容"chromedp"，发送到"searchBar"
 	chromedp.SendKeys(`//*[@id="searchBar"]`, "chromedp", chromedp.BySearch),
+	// 发送回车键到"searchBar"
+	chromedp.SendKeys(`//*[@id="searchBar"]`, kb.Enter, chromedp.BySearch),
+)
+return err
+```
+
+---
+
+HTML:
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mock Search Page</title>
+</head>
+<body>
+    <h1>Search Page Example</h1>
+    <input id="searchBar" type="text" placeholder="Type here to search...">
+    <button id="searchButton">Search</button>
+    <script>
+        document.getElementById('searchButton').onclick = function() {{
+            var searchText = document.getElementById('searchBar').value;
+            alert("Searching for: " + searchText);
+        }};
+    </script>
+</body>
+</html>
+
+问题: 单击搜索栏“Type here to search...”，从环境变量中读取"PASS"的内容作为输入，然后按“Enter”键
+
+回答:
+```go
+// Let's proceed step by step.
+// 1. 通过XPATH找到并点击"searchBar"
+// 2. 从环境变量os.Getenv("PASS")中读取内容，设置到"searchBar"
+// 3. 发送回车键到"searchBar"
+err := chromedp.Run(ctx,
+	// 通过XPATH找到并点击"searchBar"
+	chromedp.Click(`//*[@id="searchBar"]`, chromedp.BySearch),
+	// 从环境变量os.Getenv("PASS")中读取内容，设置到"searchBar"
+	chromedp.SetValue(`//*[@id="searchBar"]`, os.Getenv("PASS"), chromedp.BySearch),
 	// 发送回车键到"searchBar"
 	chromedp.SendKeys(`//*[@id="searchBar"]`, kb.Enter, chromedp.BySearch),
 )
