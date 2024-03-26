@@ -62,6 +62,7 @@ func (d *Executor) safeEval(code string) (res reflect.Value, err error) {
 func (d *Executor) ChromeNew() (*chrome.Chrome, error) {
 	code := `
 	import "fmt"
+	import "os"
 	import "context"
 	import "time"
 	import "github.com/chromedp/chromedp"
@@ -69,6 +70,7 @@ func (d *Executor) ChromeNew() (*chrome.Chrome, error) {
 	import "autochrome/executor/chrome"
 
 	func unused() {
+		fmt.Println(os.Getenv("PATH"))
 		fmt.Println(kb.Enter)
 		time.Sleep(1*time.Second)
 	}

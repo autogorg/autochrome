@@ -4,7 +4,7 @@ import "reflect"
 
 //go:generate go run github.com/traefik/yaegi/internal/cmd/extract github.com/chromedp/chromedp
 //go:generate go run github.com/traefik/yaegi/internal/cmd/extract github.com/chromedp/chromedp/kb
-//go:generate go run github.com/traefik/yaegi/internal/cmd/extract aicoder/dslexec/chrome
+//go:generate go run github.com/traefik/yaegi/internal/cmd/extract autochrome/executor/chrome
 
 // Symbols variable stores the map of stdlib symbols per package.
 var Symbols = map[string]map[string]reflect.Value{}
