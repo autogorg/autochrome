@@ -77,7 +77,7 @@ var shortHistory *autog.PromptItem =  &autog.PromptItem{
 			return msgs
 		}
 
-		content := "你的所有判断来源仅限于如下HTML内容和问题，不允许进行额外的假设!!!\nHTML:\n"
+		content := "最新的HTML内容如下\nHTML:\n"
 		for _, scoreds := range scoredss {
 			for _, scored := range scoreds {
 				content += fmt.Sprintf("...\n%s\n...\n", scored.Chunk.GetContent())

@@ -5,13 +5,14 @@
 # 代码生成规则：
 ```
 1、HTML内容为从网站抓取到的页面文本，你必须严谨的分析这些内容，你产生的操作代码代码必须严格限制在HTML文本中所包含的内容范围。
-2、任何对页面的文本输入，都必须从用户（我）的最新提问问题中解析，不能进行任何假设。
-3、必须只能生成可以替换{CodeBlock}的内容，main.go中的其它部分代码不能做任何修改。
-4、必须只能使用当前代码中已导入的包，不能再导入其它额外的包。
-5、生成的代码块需要满足替换{CodeBlock}后，确保整个代码工程能够正常编译和执行。
+2、任何对页面元素的操作，都必须从在我（用户）最后提供的HTML的内容中查找。
+3、必须只能生成可以替换{CodeBlock}的代码，main.go中的其它部分代码不能做任何修改。
+4、生成的代码必须只能使用当前main.go中已导入的包，不能再导入其它额外的包。
+5、生成的代码块需要确保在替换{CodeBlock}后整个代码工程能够正常编译和执行。
 6、chrome/chrome.go的代码是只读的不能做任何修改。
-7、如果在以上规则下可以满足我（用户）的需求，你的输出必须只能是包含注释的代码块，禁止在代码块外部（前后）生成任何描述。
-8、如果在以上规则下满足不了我（用户）的需求，请输出：您的需求无法实现。然后解释原因，不要输入任何假设性的代码。
+7、如果在以上规则下可以满足我（用户）的需求，你的输出必须只能是代码块（含注释），禁止在代码块外部（前后）生成任何描述。
+8、如果在以上规则下无法满足我（用户）的需求，请输出：您的需求无法实现。然后解释原因，不要输出任何假设性的代码。
+9、任何情况下所有的数据提取只能从我最新的提问中获取，不要输出任何假设性的数据。
 ```
 
 # 以下是工程中的所有文件内容：
@@ -163,60 +164,23 @@ HTML:
 </body>
 </html>
 
-问题: 单击搜索栏“Type here to search...”，清空其内容，然后输入“chromedp”，然后按“Enter”键
+问题: 单击搜索栏“Type here to search...”，然后输入“chromedp”，清空其内容，然后从环境变量中读取"PASS"的内容作为输入，最后按“Enter”键
 
 回答:
 ```go
 // Let's proceed step by step.
 // 1. 通过XPATH找到并点击"searchBar"
-// 2. 设置"searchBar"的值为空字符串
-// 3. 从问题中得到的内容"chromedp"，发送到"searchBar"
-// 4. 发送回车键到"searchBar"
+// 2. 从问题中得到的内容"chromedp"，发送到"searchBar"
+// 3. 设置"searchBar"的值为空字符串，旨在清空其内容
+// 4. 从环境变量os.Getenv("PASS")中读取内容，设置到"searchBar"
+// 5. 发送回车键到"searchBar"
 err := chromedp.Run(ctx,
 	// 通过XPATH找到并点击"searchBar"
 	chromedp.Click(`//*[@id="searchBar"]`, chromedp.BySearch),
-	// 设置"searchBar"的值为空字符串，清空其内容
-	chromedp.SetValue(`//*[@id="searchBar"]`, "", chromedp.BySearch),
 	// 从问题中得到的内容"chromedp"，发送到"searchBar"
 	chromedp.SendKeys(`//*[@id="searchBar"]`, "chromedp", chromedp.BySearch),
-	// 发送回车键到"searchBar"
-	chromedp.SendKeys(`//*[@id="searchBar"]`, kb.Enter, chromedp.BySearch),
-)
-return err
-```
-
----
-
-HTML:
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Mock Search Page</title>
-</head>
-<body>
-    <h1>Search Page Example</h1>
-    <input id="searchBar" type="text" placeholder="Type here to search...">
-    <button id="searchButton">Search</button>
-    <script>
-        document.getElementById('searchButton').onclick = function() {{
-            var searchText = document.getElementById('searchBar').value;
-            alert("Searching for: " + searchText);
-        }};
-    </script>
-</body>
-</html>
-
-问题: 单击搜索栏“Type here to search...”，从环境变量中读取"PASS"的内容作为输入，然后按“Enter”键
-
-回答:
-```go
-// Let's proceed step by step.
-// 1. 通过XPATH找到并点击"searchBar"
-// 2. 从环境变量os.Getenv("PASS")中读取内容，设置到"searchBar"
-// 3. 发送回车键到"searchBar"
-err := chromedp.Run(ctx,
-	// 通过XPATH找到并点击"searchBar"
-	chromedp.Click(`//*[@id="searchBar"]`, chromedp.BySearch),
+	// 设置"searchBar"的值为空字符串，旨在清空其内容
+	chromedp.SetValue(`//*[@id="searchBar"]`, "", chromedp.BySearch),
 	// 从环境变量os.Getenv("PASS")中读取内容，设置到"searchBar"
 	chromedp.SetValue(`//*[@id="searchBar"]`, os.Getenv("PASS"), chromedp.BySearch),
 	// 发送回车键到"searchBar"
