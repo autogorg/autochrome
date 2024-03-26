@@ -17,7 +17,7 @@ type Configs struct {
 	ApiKey             string     `json:"api-key"`
 	Model              string     `json:"model"`
 	ModelEmbed         string     `json:"model-embed"`
-	Question           string     `json:"q"`
+	URL                string     `json:"url"`
 }
 
 var cfgInited bool
@@ -45,7 +45,7 @@ func ParseConfigs() *Configs {
 	flag.StringVar(&cfg.Model, "model", "", "Specify the main model to use")
 	flag.StringVar(&cfg.Model, "model-embed", "", "Specify the embedding model to use")
 	flag.StringVar(&cfg.ApiKey, "api-key", "", "Specify the api key")
-	flag.StringVar(&cfg.Question, "q", "", "Question to LLM")
+	flag.StringVar(&cfg.URL, "url", "", "URL to open")
 
     flag.Parse()
 

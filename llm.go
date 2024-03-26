@@ -24,8 +24,24 @@ const (
 
 var aLLMInited bool
 var aLLM autog.LLM
+var openaiLLM *llm.OpenAi
+var ollamaLLM *llm.Ollama
+
+func GetEmbeddModel(cfg *Configs) autog.EmbeddingModel {
+	GetLLM(cfg)
+	if cfg.ApiVendor == VendorOpenAI {
+		return openaiLLM
+	} else if cfg.ApiVendor == VendorOllama {
+		return ollamaLLM
+	} else {
+		fmt.Println("ApiVendor not supported!")
+		os.Exit(0)
+	}
+	return nil
+}
 
 func GetLLM(cfg *Configs) autog.LLM {
+	var err error
 	if !aLLMInited {
 		if cfg.ApiVendor == VendorOpenAI {
 			if len(cfg.ApiBase) <= 0 {
@@ -37,13 +53,15 @@ func GetLLM(cfg *Configs) autog.LLM {
 			if len(cfg.Model) <= 0 {
 				cfg.ModelEmbed = OpenAIModelEmbed
 			}
-			aLLM = &llm.OpenAi{ 
+			openaiLLM = &llm.OpenAi{ 
 				ApiBase: cfg.ApiBase, 
 				Model: cfg.Model,
 				ModelWeak: cfg.Model,
 				ModelEmbedding: cfg.ModelEmbed,
 				ApiKey: cfg.ApiKey,
 			}
+			err = openaiLLM.InitLLM()
+			aLLM = openaiLLM
 		} else if cfg.ApiVendor == VendorOllama {
 			if len(cfg.ApiBase) <= 0 {
 				cfg.ApiBase = OpenAIApiBase
@@ -54,17 +72,18 @@ func GetLLM(cfg *Configs) autog.LLM {
 			if len(cfg.Model) <= 0 {
 				cfg.ModelEmbed = OpenAIModelEmbed
 			}
-			aLLM = &llm.Ollama{ 
+			ollamaLLM = &llm.Ollama{ 
 				ApiBase: cfg.ApiBase, 
 				Model: cfg.Model,
 				ModelWeak: cfg.Model,
 				ModelEmbedding: cfg.ModelEmbed,
 			}
+			err = ollamaLLM.InitLLM()
+			aLLM = ollamaLLM
 		} else {
 			fmt.Println("ApiVendor not supported!")
 			os.Exit(0)
 		}
-		err := aLLM.InitLLM()
 		if err != nil {
 			fmt.Printf("LLM init ERROR: %s\n", err)
 			os.Exit(0)

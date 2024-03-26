@@ -9,7 +9,7 @@
 3、必须只能使用当前代码中已导入的包，不能再导入其它额外的包。
 4、生成的代码块需要满足替换{CodeBlock}后，确保整个代码工程能够正常编译和执行。
 5、chrome/chrome.go的代码是只读的不能做任何修改。
-6、如果在以上规则下可以满足我（用户）的需求，你的输出必须只能生成包含注释的代码块，禁止在代码块外部（前后）生成任何描述。
+6、如果在以上规则下可以满足我（用户）的需求，你的输出必须只能是包含注释的代码块，禁止在代码块外部（前后）生成任何描述。
 7、如果在以上规则下满足不了我（用户）的需求，请输出：您的需求无法实现。然后解释原因，不要输入任何假设性的代码。
 ```
 
@@ -158,17 +158,20 @@ HTML:
 </body>
 </html>
 
-问题: 单击搜索栏“Type here to search...”，输入“chromedp”，然后按“Enter”键
+问题: 单击搜索栏“Type here to search...”，清空其内容，输入“chromedp”，然后按“Enter”键
 
 回答:
 ```go
 // Let's proceed step by step.
 // 1. 通过XPATH找到并点击"searchBar"
-// 2. 输入"chromedp"到"searchBar"
-// 3. 发送回车键到"searchBar"
+// 2. 设置"searchBar"的值为空字符串
+// 3. 输入"chromedp"到"searchBar"
+// 4. 发送回车键到"searchBar"
 err := chromedp.Run(ctx,
 	// 通过XPATH找到并点击"searchBar"
 	chromedp.Click(`//*[@id="searchBar"]`, chromedp.BySearch),
+	// 设置"searchBar"的值为空字符串
+	chromedp.SetValue(`//*[@id="searchBar"]`, "", chromedp.BySearch),
 	// 输入"chromedp"到"searchBar"
 	chromedp.SendKeys(`//*[@id="searchBar"]`, "chromedp", chromedp.BySearch),
 	// 发送回车键到"searchBar"
