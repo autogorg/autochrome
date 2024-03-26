@@ -1,4 +1,4 @@
-package
+package main
 
 import (
 	"flag"
@@ -26,9 +26,9 @@ var cfg Configs
 func GetConfigs() *Configs{
 	if !cfgInited {
 		cfgInited = true
-		return ParseConfigs()
+		ParseConfigs()
 	}
-	return cfg
+	return &cfg
 }
 
 func ClearConfigs(cfgs *Configs) {
@@ -45,7 +45,7 @@ func ParseConfigs() *Configs {
 	flag.StringVar(&cfg.Model, "model", "", "Specify the main model to use")
 	flag.StringVar(&cfg.Model, "model-embed", "", "Specify the embedding model to use")
 	flag.StringVar(&cfg.ApiKey, "api-key", "", "Specify the api key")
-	flag.StringVar(&cfg.Q, "q", "", "Question to LLM")
+	flag.StringVar(&cfg.Question, "q", "", "Question to LLM")
 
     flag.Parse()
 

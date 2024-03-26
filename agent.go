@@ -6,8 +6,6 @@ import (
 	"context"
 	_ "embed"
 	"github.com/autogorg/autog"
-	"github.com/autogorg/autog/llm"
-	"github.com/autogorg/autog/rag"
 )
 
 //go:embed prompt/system.md
@@ -62,28 +60,24 @@ var output *autog.Output = &autog.Output{
 		fmt.Println()
 		return &strings.Builder{}
 	},
-	WriteStreamDelta: func(contentbuf *strings.Builder, delta string) {
-		outputDelta(delta)
-	},
 	WriteStreamError: func(contentbuf *strings.Builder, status autog.LLMStatus, errstr string) {
-		outputError(errstr)
-	}
+		fmt.Printf("\n%s\n", errstr)
+	},
 	WriteStreamEnd: func(contentbuf *strings.Builder) {
 		fmt.Println()
+	},
+}
+
+
+
+func RunChromeAgent(llm autog.LLM, query string) {
+
+	output.WriteStreamDelta = func(contentbuf *strings.Builder, delta string) {
+		if output.AgentStage == autog.AsWaitResponse {
+			fmt.Print(Cyan(delta))
+		}
 	}
-}
 
-func outputDelta(delta string) {
-	if output.AgentStage == autog.AsWaitResponse {
-		fmt.Print(delta)
-	}
-}
-
-func outputError(errstr string) {
-	fmt.Printf("\n%s\n", errstr)
-}
-
-func RunChromeAgent(llm auto.LLM, query string) {
 	cxt := context.Background()
 	chromeAgent.Query = query
 	chromeAgent.
