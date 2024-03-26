@@ -8,7 +8,7 @@ import (
 	"github.com/autogorg/autog"
 )
 
-//go:embed prompt/system.md
+//go:embed CHROME_PROMPT.md
 var systemStr string
 
 
