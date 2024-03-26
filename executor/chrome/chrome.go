@@ -2,6 +2,7 @@ package chrome
 
 import (
 	"fmt"
+	"os"
 	"context"
 	"time"
 	"github.com/chromedp/chromedp"
@@ -19,6 +20,7 @@ type Chrome struct {
 
 
 func unused() {
+	fmt.Println(os.Getenv("PATH"))
 	fmt.Println(kb.Enter)
 	time.Sleep(1*time.Second)
 }

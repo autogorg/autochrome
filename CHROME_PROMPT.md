@@ -20,6 +20,7 @@ package chrome
 
 import (
 	"fmt"
+	"os"
 	"context"
 	"time"
 	"github.com/chromedp/chromedp"
@@ -27,6 +28,7 @@ import (
 )
 
 func unused() {
+	fmt.Println(os.Getenv("PATH"))
 	fmt.Println(kb.Enter)
 	time.Sleep(1*time.Second)
 }
