@@ -18,7 +18,7 @@
 
 - 自然语言处理：理解自然语言指令以执行浏览器交互。
 - 浏览器操作：与 Chromdp 无缝集成以实现 Web 浏览器自动化。
-- 开源：本代码以及其依赖的 AI Agent 开发框架（[AutoG](https://github.com/autogorg/autog) 100% 开源，以确保其透明度并确保其符合用户的利益。
+- 开源：本代码以及其依赖的 AI Agent 开发框架 [AutoG](https://github.com/autogorg/autog) 100% 开源，以确保其透明度并确保其符合用户的利益。
 - 隐私控制：通过 Ollama 支持本地模型，例如Gemma-7b以便用户可以完全控制AI Agent并有隐私保障。
 - RAG 技术：首先使用 Embedding 模型执行 RAG 来提取最相关的 HTML 片段，以上下文的形式提供给 LLM（因为直接完整的 HTML 代码大概率会超出上下文长度限制）。然后利用少样本学习和思想链来引出最相关的 Chromdp 代码来执行操作，而无需微调 LLM 。
 - 解释执行（Interpreter）：这是一个完整的 AI Interpreter 实现，对 Agent 对 AI 生成的代码进行解释执行，无缝的调用进程内的任意函数，可以大胆的想象实现任何操作（除了浏览器）！
