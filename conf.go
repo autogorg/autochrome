@@ -17,6 +17,9 @@ type Configs struct {
 	ApiKey             string     `json:"api-key"`
 	Model              string     `json:"model"`
 	ModelEmbed         string     `json:"model-embed"`
+	ChunkSize          int        `json:"chunk-size"`
+	ChunkOverlap       int        `json:"chunk-overlap"`
+	TopK               int        `json:"topk"`
 	URL                string     `json:"url"`
 }
 
@@ -45,6 +48,10 @@ func ParseConfigs() *Configs {
 	flag.StringVar(&cfg.Model, "model", "", "Specify the main model to use")
 	flag.StringVar(&cfg.Model, "model-embed", "", "Specify the embedding model to use")
 	flag.StringVar(&cfg.ApiKey, "api-key", "", "Specify the api key")
+	flag.IntVar(&cfg.ChunkSize, "chunk-size", 2048, "Chunk size for split text")
+	flag.IntVar(&cfg.ChunkOverlap, "chunk-overlap", 25, "Chunk overlap for split text (percent)")
+	flag.IntVar(&cfg.TopK, "topk", 10, "Chunk overlap for split text (percent)")
+	flag.IntVar(&cfg.ApiKey, "api-key", "", "Specify the api key")
 	flag.StringVar(&cfg.URL, "url", "", "URL to open")
 
     flag.Parse()
@@ -53,6 +60,19 @@ func ParseConfigs() *Configs {
         fmt.Println(Version)
         os.Exit(0)
     }
+
+	if cfg.ChunkSize < 512 {
+		cfg.ChunkSize = 512
+	}
+	if cfg.ChunkOverlap < 1 {
+		cfg.ChunkOverlap = 1
+	}
+	if cfg.ChunkOverlap > 99 {
+		cfg.ChunkOverlap = 99
+	}
+	if cfg.Topk < 1 {
+		cfg.TopK = 1
+	}
 
     return &cfg
 }

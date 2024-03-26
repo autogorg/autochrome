@@ -153,7 +153,7 @@ func main() {
 		if sb.Len() > 0 && multiline == MultilineNone {
 			fmt.Printf(Green("## ---USER---\n"))
 			fmt.Printf("%s\n", BrightWhite(sb.String()))
-			RunChromeAgent(llm, embedModel, sb.String())
+			RunChromeAgent(cfg, llm, embedModel, sb.String())
 			sb.Reset()
 		}
 	}

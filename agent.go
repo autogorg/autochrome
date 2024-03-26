@@ -17,6 +17,7 @@ var systemStr string
 
 type ChromeAgent struct {
 	autog.Agent
+	Cfg   *Configs
 	Rag   *autog.Rag
 	Query string
 	ShowLog  func (level int, content string)
@@ -59,7 +60,8 @@ var shortHistory *autog.PromptItem =  &autog.PromptItem{
 		ShowAgentLog(1, fmt.Sprintf("Indexing HTML...\n"))
 
 		splitter := &rag.TextSplitter{
-			ChunkSize : 8192,
+			ChunkSize: chromeAgent.Cfg.ChunkSize,
+			Overlap: float64(chromeAgent.Cfg.ChunkOverlap)/float64(100.0),
 		}
 		err := chromeAgent.Rag.Indexing(cxt, "/html", GetHtmlContext(), splitter, true)
 		if err != nil {
@@ -69,13 +71,13 @@ var shortHistory *autog.PromptItem =  &autog.PromptItem{
 
 		ShowAgentLog(1, fmt.Sprintf("Retrieval HTML...\n"))
 		var scoredss []autog.ScoredChunks
-		scoredss, err  = chromeAgent.Rag.Retrieval(cxt, "/html", []string{query}, 3)
+		scoredss, err  = chromeAgent.Rag.Retrieval(cxt, "/html", []string{query}, chromeAgent.Cfg.Topk)
 		if err != nil {
 			ShowAgentLog(-1, fmt.Sprintf("RAG Retrieval ERROR: %s\n", err))
 			return msgs
 		}
 
-		content := "请基于以下内容进行回答，你的所有操作来源仅限于如下HTML内容和我的提问内容，不允许进行任何假设!!!我的问题将在下一条消息中发给你!\nHTML:\n"
+		content := "你的所有判断来源仅限于如下HTML内容和问题，不允许进行额外的假设!!!\nHTML:\n"
 		for _, scoreds := range scoredss {
 			for _, scored := range scoreds {
 				content += fmt.Sprintf("...\n%s\n...\n", scored.Chunk.GetContent())
@@ -104,7 +106,7 @@ var summaryPrefix *autog.PromptItem =  &autog.PromptItem{
 
 var input *autog.Input = &autog.Input{
 	ReadContent: func() string {
-		return chromeAgent.Query
+		return "问题：" + chromeAgent.Query
 	},
 }
 
@@ -148,7 +150,7 @@ func ShowAgentLog(level int, str string) {
 	chromeAgent.ShowLog(level, str)
 }
 
-func RunChromeAgent(llm autog.LLM, embedmodel autog.EmbeddingModel, query string) {
+func RunChromeAgent(cfg *Configs, llm autog.LLM, embedmodel autog.EmbeddingModel, query string) {
 	cxt, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -163,7 +165,7 @@ func RunChromeAgent(llm autog.LLM, embedmodel autog.EmbeddingModel, query string
 	if chromeAgent.Rag == nil {
 		chromeAgent.Rag = CreateMemoryRag(embedmodel)
 	}
-
+	chromeAgent.Cfg   = cfg
 	chromeAgent.Query = query
 	chromeAgent.Prompt(systemPrompt, longHistory, shortHistory).
     ReadQuestion(cxt, input, output).
