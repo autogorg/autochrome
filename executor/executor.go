@@ -2,6 +2,7 @@ package executor
 
 import (
 	"fmt"
+	"os"
 	"errors"
 	"reflect"
 	"strings"
@@ -18,7 +19,9 @@ type Executor struct {
 func NewExecutor() (*Executor, error) {
 	exec := &Executor{}
 
-	i   := interp.New(interp.Options{})
+	i := interp.New(interp.Options{
+			Env: os.Environ(),
+	})
 	err := i.Use(stdlib.Symbols)
 	if err != nil {
 		return nil, err
