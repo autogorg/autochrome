@@ -59,6 +59,7 @@ func GetLLM(cfg *Configs) autog.LLM {
 				ModelWeak: cfg.Model,
 				ModelEmbedding: cfg.ModelEmbed,
 				ApiKey: cfg.ApiKey,
+				Temperature: 0,
 			}
 			err = openaiLLM.InitLLM()
 			aLLM = openaiLLM
@@ -77,6 +78,7 @@ func GetLLM(cfg *Configs) autog.LLM {
 				Model: cfg.Model,
 				ModelWeak: cfg.Model,
 				ModelEmbedding: cfg.ModelEmbed,
+				Temperature: 0,
 			}
 			err = ollamaLLM.InitLLM()
 			aLLM = ollamaLLM
