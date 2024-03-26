@@ -51,7 +51,7 @@ func ParseConfigs() *Configs {
 	flag.IntVar(&cfg.ChunkSize, "chunk-size", 2048, "Chunk size for split text")
 	flag.IntVar(&cfg.ChunkOverlap, "chunk-overlap", 25, "Chunk overlap for split text (percent)")
 	flag.IntVar(&cfg.TopK, "topk", 10, "Chunk overlap for split text (percent)")
-	flag.IntVar(&cfg.ApiKey, "api-key", "", "Specify the api key")
+	flag.StringVar(&cfg.ApiKey, "api-key", "", "Specify the api key")
 	flag.StringVar(&cfg.URL, "url", "", "URL to open")
 
     flag.Parse()
@@ -70,7 +70,7 @@ func ParseConfigs() *Configs {
 	if cfg.ChunkOverlap > 99 {
 		cfg.ChunkOverlap = 99
 	}
-	if cfg.Topk < 1 {
+	if cfg.TopK < 1 {
 		cfg.TopK = 1
 	}
 

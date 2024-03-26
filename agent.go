@@ -71,7 +71,7 @@ var shortHistory *autog.PromptItem =  &autog.PromptItem{
 
 		ShowAgentLog(1, fmt.Sprintf("Retrieval HTML...\n"))
 		var scoredss []autog.ScoredChunks
-		scoredss, err  = chromeAgent.Rag.Retrieval(cxt, "/html", []string{query}, chromeAgent.Cfg.Topk)
+		scoredss, err  = chromeAgent.Rag.Retrieval(cxt, "/html", []string{query}, chromeAgent.Cfg.TopK)
 		if err != nil {
 			ShowAgentLog(-1, fmt.Sprintf("RAG Retrieval ERROR: %s\n", err))
 			return msgs
