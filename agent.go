@@ -141,7 +141,7 @@ var doaction *autog.DoAction = &autog.DoAction {
 	},
 }
 
-func CreateMemoryRag(embedmodel autog.EmbeddingModel, chunkBatch int) *autog.Rag {
+func CreateMemoryRag(embedmodel autog.EmbeddingModel, chunkBatch int, routines int) *autog.Rag {
 	memDB, err := rag.NewMemDatabase()
 	if err != nil {
 		fmt.Printf("CreateMemoryRag ERROR: %s\n", err)
@@ -152,6 +152,7 @@ func CreateMemoryRag(embedmodel autog.EmbeddingModel, chunkBatch int) *autog.Rag
 		Database: memDB,
 		EmbeddingModel: embedmodel,
 		EmbeddingBatch: chunkBatch,
+		EmbeddingRoutines: routines,
 	}
 
 	return memRag
@@ -195,7 +196,7 @@ func RunChromeAgent(cfg *Configs, llm autog.LLM, embedmodel autog.EmbeddingModel
 	}()
 
 	if chromeAgent.Rag == nil {
-		chromeAgent.Rag = CreateMemoryRag(embedmodel, cfg.ChunkBatch)
+		chromeAgent.Rag = CreateMemoryRag(embedmodel, cfg.ChunkBatch, cfg.ChunkRoutines)
 	}
 	chromeAgent.Cfg   = cfg
 	chromeAgent.Query = query
