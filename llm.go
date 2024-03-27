@@ -65,13 +65,13 @@ func GetLLM(cfg *Configs) autog.LLM {
 			aLLM = openaiLLM
 		} else if cfg.ApiVendor == VendorOllama {
 			if len(cfg.ApiBase) <= 0 {
-				cfg.ApiBase = OpenAIApiBase
+				cfg.ApiBase = OllamaApiBase
 			}
 			if len(cfg.Model) <= 0 {
-				cfg.Model = OpenAIModel
+				cfg.Model = OllamaModel
 			}
 			if len(cfg.Model) <= 0 {
-				cfg.ModelEmbed = OpenAIModelEmbed
+				cfg.ModelEmbed = OllamaModelEmbed
 			}
 			ollamaLLM = &llm.Ollama{ 
 				ApiBase: cfg.ApiBase, 
