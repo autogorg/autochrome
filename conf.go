@@ -46,7 +46,7 @@ func ParseConfigs() *Configs {
 	flag.StringVar(&cfg.ApiVendor, "api-vendor", VendorOpenAI, "Specify the vendor decide which API type to use (openai or ollama)")
 	flag.StringVar(&cfg.ApiBase, "api-base", "", "Specify the api base url")
 	flag.StringVar(&cfg.Model, "model", "", "Specify the main model to use")
-	flag.StringVar(&cfg.Model, "model-embed", "", "Specify the embedding model to use")
+	flag.StringVar(&cfg.ModelEmbed, "model-embed", "", "Specify the embedding model to use")
 	flag.StringVar(&cfg.ApiKey, "api-key", "", "Specify the api key")
 	flag.IntVar(&cfg.ChunkSize, "chunk-size", 2048, "Chunk size for split text")
 	flag.IntVar(&cfg.ChunkOverlap, "chunk-overlap", 25, "Chunk overlap for split text (percent)")
