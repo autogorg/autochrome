@@ -50,8 +50,6 @@ func (c *Chrome) SetUrl(url string) {
 func (c *Chrome) GetHtml() string {
 	c.RefreshContext()
 	chromedp.Run(c.Context,
-		// Wait document ready
-		chromedp.Evaluate(`document.readyState === "complete"`, nil),
 		// Read outerHTML
 		chromedp.OuterHTML("html", &c.Html),
 	)
