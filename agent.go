@@ -43,18 +43,29 @@ var longHistory *autog.PromptItem =  &autog.PromptItem{
 
 var shortHistory *autog.PromptItem =  &autog.PromptItem{
 	GetMessages : func (query string) []autog.ChatMessage {
-		msgs := chromeAgent.GetShortHistory()
-
 		cxt, cancel := context.WithCancel(context.Background())
-		defer cancel()
-	
+
 		sigChan := make(chan os.Signal, 1)
+		done := make(chan bool)
+	
 		signal.Notify(sigChan, syscall.SIGINT)
 	
 		go func() {
-			<-sigChan
-			cancel()
+			select {
+			case <-sigChan:
+				cancel()
+			case <-cxt.Done():
+			}
+			done <- true
 		}()
+	
+		defer func() {
+			cancel()
+			<-done
+			signal.Stop(sigChan)
+		}()
+
+		msgs := chromeAgent.GetShortHistory()
 
 		// HTML太大，不能完整的送给大模型，所以这里进行RAG增强检索，因为页面会刷新，所以每次都重新间索引
 		ShowAgentLog(1, fmt.Sprintf("Indexing HTML...\n"))
@@ -152,14 +163,25 @@ func ShowAgentLog(level int, str string) {
 
 func RunChromeAgent(cfg *Configs, llm autog.LLM, embedmodel autog.EmbeddingModel, query string) {
 	cxt, cancel := context.WithCancel(context.Background())
-	defer cancel()
 
 	sigChan := make(chan os.Signal, 1)
+	done := make(chan bool)
+
 	signal.Notify(sigChan, syscall.SIGINT)
 
-	go func() {
-		<-sigChan
+    go func() {
+        select {
+        case <-sigChan:
+            cancel()
+        case <-cxt.Done():
+        }
+        done <- true
+    }()
+
+	defer func() {
 		cancel()
+		<-done
+		signal.Stop(sigChan)
 	}()
 
 	if chromeAgent.Rag == nil {
