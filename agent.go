@@ -74,6 +74,7 @@ var shortHistory *autog.PromptItem =  &autog.PromptItem{
 		splitter := &rag.TextSplitter{
 			ChunkSize: chromeAgent.Cfg.ChunkSize,
 			Overlap: float64(chromeAgent.Cfg.ChunkOverlap)/float64(100.0),
+			EmbeddingBatch: chromeAgent.Cfg.ChunkBatch,
 		}
 		err := chromeAgent.Rag.Indexing(cxt, "/html", GetHtmlContext(), splitter, true)
 		if err != nil {
