@@ -10,6 +10,8 @@ import (
 	"autochrome/executor/symbols"
 	"github.com/traefik/yaegi/interp"
 	"github.com/traefik/yaegi/stdlib"
+	"github.com/traefik/yaegi/stdlib/syscall"
+	"github.com/traefik/yaegi/stdlib/unrestricted"
 )
 
 type Executor struct {
@@ -29,6 +31,24 @@ func NewExecutor() (*Executor, error) {
 
 	err = i.Use(symbols.Symbols)
 	if err != nil {
+		return nil, err
+	}
+
+	err = i.Use(syscall.Symbols)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = os.Setenv("YAEGI_SYSCALL", "1"); err != nil {
+		return nil, err
+	}
+
+	err = i.Use(unrestricted.Symbols)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = os.Setenv("YAEGI_UNRESTRICTED", "1"); err != nil {
 		return nil, err
 	}
 
@@ -66,6 +86,8 @@ func (d *Executor) ChromeNew() (*chrome.Chrome, error) {
 	code := `
 	import "fmt"
 	import "os"
+	import "os/signal"
+	import "syscall"
 	import "context"
 	import "time"
 	import "github.com/chromedp/chromedp"
@@ -84,10 +106,25 @@ func (d *Executor) ChromeNew() (*chrome.Chrome, error) {
 			return nil
 		}
 	}
+
+	var SignalFunc = func () {
+		var sigChan chan os.Signal = make(chan os.Signal, 1)
+		signal.Notify(sigChan, syscall.SIGINT)
+		go func() {
+			for sig := range sigChan {
+				VarChrome.NavigateAndWaitReady()
+			}
+		}()
+	}
 	`
 	_, err := d.safeEval(code)
 	if err != nil {
 		return nil, err
+	}
+
+	_, serr := d.safeEval(fmt.Sprintf(`SignalFunc()`))
+	if serr != nil {
+		return nil, serr
 	}
 
 	value, verr := d.safeEval(fmt.Sprintf(`VarChrome`))
