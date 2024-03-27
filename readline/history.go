@@ -42,7 +42,7 @@ func (h *History) Init() error {
 		return err
 	}
 
-	path := filepath.Join(home, ".ollama", "history")
+	path := filepath.Join(home, ".autochrome", "history")
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return err
 	}
