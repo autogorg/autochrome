@@ -50,7 +50,7 @@ func ParseConfigs() *Configs {
 	flag.StringVar(&cfg.ModelEmbed, "model-embed", "", "Specify the embedding model to use")
 	flag.StringVar(&cfg.ApiKey, "api-key", "", "Specify the api key")
 	flag.IntVar(&cfg.ChunkSize, "chunk-size", 2048, "Chunk size for split text")
-	flag.IntVar(&cfg.ChunkBatch, "chunk-batch", 4, "Chunk batch for split text")
+	flag.IntVar(&cfg.ChunkBatch, "chunk-batch", 5, "Chunk batch for split text")
 	flag.IntVar(&cfg.ChunkOverlap, "chunk-overlap", 25, "Chunk overlap for split text (percent)")
 	flag.IntVar(&cfg.TopK, "topk", 10, "TopK for RAG")
 	flag.StringVar(&cfg.URL, "url", "", "URL to open")

@@ -74,7 +74,6 @@ var shortHistory *autog.PromptItem =  &autog.PromptItem{
 		splitter := &rag.TextSplitter{
 			ChunkSize: chromeAgent.Cfg.ChunkSize,
 			Overlap: float64(chromeAgent.Cfg.ChunkOverlap)/float64(100.0),
-			EmbeddingBatch: chromeAgent.Cfg.ChunkBatch,
 		}
 		err := chromeAgent.Rag.Indexing(cxt, "/html", GetHtmlContext(), splitter, true)
 		if err != nil {
@@ -142,7 +141,7 @@ var doaction *autog.DoAction = &autog.DoAction {
 	},
 }
 
-func CreateMemoryRag(embedmodel autog.EmbeddingModel) *autog.Rag {
+func CreateMemoryRag(embedmodel autog.EmbeddingModel, chunkBatch int) *autog.Rag {
 	memDB, err := rag.NewMemDatabase()
 	if err != nil {
 		fmt.Printf("CreateMemoryRag ERROR: %s\n", err)
@@ -152,7 +151,7 @@ func CreateMemoryRag(embedmodel autog.EmbeddingModel) *autog.Rag {
 	memRag := &autog.Rag{
 		Database: memDB,
 		EmbeddingModel: embedmodel,
-		EmbeddingBatch: 5,
+		EmbeddingBatch: chunkBatch,
 	}
 
 	return memRag
@@ -196,7 +195,7 @@ func RunChromeAgent(cfg *Configs, llm autog.LLM, embedmodel autog.EmbeddingModel
 	}()
 
 	if chromeAgent.Rag == nil {
-		chromeAgent.Rag = CreateMemoryRag(embedmodel)
+		chromeAgent.Rag = CreateMemoryRag(embedmodel, cfg.ChunkBatch)
 	}
 	chromeAgent.Cfg   = cfg
 	chromeAgent.Query = query
