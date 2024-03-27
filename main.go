@@ -45,7 +45,7 @@ func main() {
 
 	openerr := ChromeActionOpenUrl(cfg.URL)
 	if openerr != nil {
-		fmt.Println("Open url error : %s\n", openerr)
+		fmt.Printf("Open url error : %s\n", openerr)
 		return
 	}
 
