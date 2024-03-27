@@ -20,6 +20,7 @@ type ChromeAgent struct {
 	Cfg   *Configs
 	Rag   *autog.Rag
 	Query string
+	LastHtmlContext string
 	ShowLog  func (level int, content string)
 }
 
@@ -95,6 +96,8 @@ var shortHistory *autog.PromptItem =  &autog.PromptItem{
 			}
 		}
 
+		chromeAgent.LastHtmlContext = content
+
 		ShowAgentLog(1, fmt.Sprintf("Sending...\n"))
 
 		msgs = append(msgs, autog.ChatMessage{Role:autog.ROLE_USER, Content: content})
@@ -159,6 +162,13 @@ func ShowAgentLog(level int, str string) {
 		return
 	}
 	chromeAgent.ShowLog(level, str)
+}
+
+func GetLastHtmlContext() string {
+	if chromeAgent != nil {
+		return chromeAgent.LastHtmlContext
+	}
+	return "Empty!\n"
 }
 
 func RunChromeAgent(cfg *Configs, llm autog.LLM, embedmodel autog.EmbeddingModel, query string) {

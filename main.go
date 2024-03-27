@@ -144,6 +144,12 @@ func main() {
 			usage()
 		case strings.HasPrefix(line, "/exit"), strings.HasPrefix(line, "/bye"):
 			return
+		case strings.HasPrefix(line, "/html"):
+			fmt.Printf("%s\n", BrightBlack(GetHtmlContext()))
+			continue
+		case strings.HasPrefix(line, "/last"):
+			fmt.Printf("%s\n", BrightBlack(GetLastHtmlContext()))
+			continue
 		case strings.HasPrefix(line, "/"):
 			sb.WriteString(line)
 		default:
