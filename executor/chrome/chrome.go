@@ -63,10 +63,12 @@ func (c *Chrome) NewTab() {
 		chromedp.WindowSize(c.Width, c.Height),
 	)
 	c.BaseContext, c.BaseCancel = chromedp.NewExecAllocator(context.Background(), opts...)
+	c.Context, c.Cancel = chromedp.NewContext(c.BaseContext)
 }
 
 func (c *Chrome) RefreshContext() {
-	c.Context, c.Cancel = chromedp.NewContext(c.BaseContext)
+	// TODO: how to avoid Ctl + C signal?
+	// c.Context, c.Cancel = chromedp.NewContext(c.BaseContext)
 }
 
 func (c *Chrome) NavigateAndWaitReady() string {

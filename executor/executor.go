@@ -112,6 +112,7 @@ func (d *Executor) ChromeNew() (*chrome.Chrome, error) {
 		signal.Notify(sigChan, syscall.SIGINT)
 		go func() {
 			for sig := range sigChan {
+				VarChrome.NewTab()
 				VarChrome.NavigateAndWaitReady()
 			}
 		}()
