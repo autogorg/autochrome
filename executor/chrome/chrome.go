@@ -14,6 +14,8 @@ type Chrome struct {
 	Height  int
 	Url     string
 	Html    string
+	BaseContext context.Context
+	BaseCancel  context.CancelFunc
 	Context context.Context
 	Cancel  context.CancelFunc
 }
@@ -60,11 +62,15 @@ func (c *Chrome) NewTab() {
 		chromedp.Flag("disable-web-security", true),
 		chromedp.WindowSize(c.Width, c.Height),
 	)
-	c.Context, c.Cancel = chromedp.NewExecAllocator(context.Background(), opts...)
-	c.Context, c.Cancel = chromedp.NewContext(c.Context)
+	c.BaseContext, c.BaseCancel = chromedp.NewExecAllocator(context.Background(), opts...)
+}
+
+func (c *Chrome) RefreshContext() {
+	c.Context, c.Cancel = chromedp.NewContext(c.BaseContext)
 }
 
 func (c *Chrome) NavigateAndWaitReady() string {
+	c.RefreshContext()
 	err := chromedp.Run(c.Context,
 		chromedp.Navigate(c.Url),
 		// Wait document ready
@@ -84,6 +90,8 @@ func (c *Chrome) RunTasks(fun func (ctx context.Context) error) string {
 	if fun == nil {
 		return "Task fun is nil!"
 	}
+
+	c.RefreshContext()
 	err := fun(c.Context)
 
 	if err != nil {
