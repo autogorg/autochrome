@@ -177,6 +177,9 @@ HTML:
 单击搜索栏“Type here to search...”，然后输入“chromedp”，清空其内容，然后从环境变量中读取"PASS"的内容作为输入，最后按“Enter”键
 #### 输出:
 ```go
+// 首先需要新定义变量`pass`，因为如果在调用`chromedp.Run`函数的参数列表内定义变量不符合Golang语法规范。
+// 然后从环境变量中读取"PASS"的内容存入新定义变量`pass`中。
+pass := os.Getenv("PASS")
 err := chromedp.Run(ctx,
 	// 定位搜索输入框并点击以激活
 	chromedp.Click(`#searchBar`, chromedp.ByQuery),
@@ -184,8 +187,6 @@ err := chromedp.Run(ctx,
 	chromedp.SendKeys(`#searchBar`, "chromedp", chromedp.ByQuery),
 	// 清空搜索框内容
 	chromedp.SetValue(`#searchBar`, "", chromedp.ByQuery),
-	// 从环境变量中读取"PASS"的内容
-	pass := os.Getenv("PASS"),
 	// 将"PASS"环境变量的值输入到搜索框
 	chromedp.SendKeys(`#searchBar`, pass, chromedp.ByQuery),
 	// 模拟按下"Enter"键完成搜索
@@ -248,7 +249,8 @@ HTML:
 选中第三段内的文本
 #### 输出:
 ```go
-// Let's proceed step by step.
+// 首先需要新定义变量`javascript`，因为如果在调用`chromedp.Run`函数的参数列表内定义变量不符合Golang语法规范。
+// 然后生成JS脚本，初始化`javascript`变量：
 // 1. 要选择一个段落，我们可以执行一个自定义JS脚本来使用DOM选择文本
 // 2. 在提供的HTML中，可以使用ID "para3" 来识别第三个段落
 // 3. 在JS脚本中，我们需要使用getElementById来精确的选择段落
