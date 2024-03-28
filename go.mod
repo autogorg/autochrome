@@ -3,7 +3,7 @@ module autochrome
 go 1.22.1
 
 require (
-	github.com/autogorg/autog v0.0.8
+	github.com/autogorg/autog v0.0.9
 	github.com/chromedp/cdproto v0.0.0-20240202021202-6d0b6a386732
 	github.com/chromedp/chromedp v0.9.5
 	github.com/emirpasic/gods v1.18.1

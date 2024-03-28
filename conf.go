@@ -53,7 +53,7 @@ func ParseConfigs() *Configs {
 	flag.IntVar(&cfg.ChunkSize, "chunk-size", 512, "Chunk size for split text")
 	flag.IntVar(&cfg.ChunkOverlap, "chunk-overlap", 10, "Chunk overlap for split text (percent)")
 	flag.IntVar(&cfg.ChunkBatch, "chunk-batch", 5, "Chunk batch for split text")
-	flag.IntVar(&cfg.ChunkRoutines, "chunk-routines", 1, "Chunk routines for split text")
+	flag.IntVar(&cfg.ChunkRoutines, "chunk-routines", 5, "Chunk routines for split text")
 	flag.IntVar(&cfg.TopK, "topk", 30, "TopK for RAG")
 	flag.StringVar(&cfg.URL, "url", "", "URL to open")
 
