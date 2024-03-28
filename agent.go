@@ -77,6 +77,20 @@ var shortHistory *autog.PromptItem =  &autog.PromptItem{
 			BreakStartChars: []rune { '<' },
 			BreakEndChars:   []rune { '>' },
 		}
+
+		chromeAgent.Rag.EmbeddingCallback = func (stage autog.EmbeddingStage, texts []string, embeds []autog.Embedding, i, j int, finished, tried int, err error) bool {
+			if stage != autog.EmbeddingStageIndexing {
+				return tried < 1
+			}
+
+			if err != nil {
+				ShowAgentLog(1, fmt.Sprintf("Embedding HTML (%d/%d) Retry...\n", len(texts), finished))
+				return tried < 1
+			}
+			ShowAgentLog(1, fmt.Sprintf("Embedding HTML (%d/%d) Done!\n", len(texts), finished))
+			return false
+		}
+
 		err := chromeAgent.Rag.Indexing(cxt, "/html", GetHtmlContext(), splitter, true)
 		if err != nil {
 			ShowAgentLog(-1, fmt.Sprintf("RAG Indexing ERROR: %s\n", err))
