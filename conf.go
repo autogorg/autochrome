@@ -52,7 +52,7 @@ func ParseConfigs() *Configs {
 
 	flag.BoolVar(&cfg.Version, "version", false, "Show the version number")
 
-	flag.StringVar(&cfg.ApiVendor, "api-vendor", getenvOrDefault("API_VENDOR", "VendorOpenAI"), "Specify the vendor decide which API type to use (openai or ollama)")
+	flag.StringVar(&cfg.ApiVendor, "api-vendor", getenvOrDefault("API_VENDOR", VendorOpenAI), "Specify the vendor decide which API type to use (openai or ollama)")
 	flag.StringVar(&cfg.ApiBase, "api-base", getenvOrDefault("API_BASE", ""), "Specify the api base url")
 	flag.StringVar(&cfg.Model, "model", getenvOrDefault("MODEL", ""), "Specify the main model to use")
 	flag.StringVar(&cfg.ModelEmbed, "model-embed", getenvOrDefault("MODEL_EMBED", ""), "Specify the embedding model to use")
