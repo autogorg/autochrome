@@ -71,7 +71,7 @@ var shortHistory *autog.PromptItem =  &autog.PromptItem{
 
 		currentHtml := GetHtmlContext()
 
-		if chromeAction.LastHtml != currentHtml {
+		if chromeAgent.LastHtml != currentHtml {
 			// HTML太大，不能完整的送给大模型，所以这里进行RAG增强检索，因为页面会刷新，所以每次都重新间索引
 			ShowAgentLog(1, fmt.Sprintf("Indexing HTML...\n"))
 			splitter := &rag.TextSplitter{
@@ -103,10 +103,11 @@ var shortHistory *autog.PromptItem =  &autog.PromptItem{
 
 		ShowAgentLog(1, fmt.Sprintf("Retrieval HTML...\n"))
 		var scoredss []autog.ScoredChunks
+		var err error
 		scoredss, err  = chromeAgent.Rag.Retrieval(cxt, "/html", []string{query}, chromeAgent.Cfg.TopK)
 		if err != nil {
 			ShowAgentLog(-1, fmt.Sprintf("RAG Retrieval ERROR: %s\n", err))
-			chromeAction.LastHtml = ""
+			chromeAgent.LastHtml = ""
 			return msgs
 		}
 
@@ -118,7 +119,7 @@ var shortHistory *autog.PromptItem =  &autog.PromptItem{
 		}
 
 		chromeAgent.LastHtmlContext = content
-		chromeAction.LastHtml = currentHtml
+		chromeAgent.LastHtml = currentHtml
 
 		ShowAgentLog(1, fmt.Sprintf("Sending...\n"))
 
