@@ -1,8 +1,11 @@
 # AutoChrome
 
+#### 使用演示
+![demo](docs/demo.gif)
+
 ### 通过将自然语言指令转换为无缝的浏览器交互来重新定义互联网冲浪。
 
-思路来源[LaVague](https://github.com/lavague-ai/LaVague) 但这是一个**Golang版本的全新实现**
+思路来源[LaVague](https://github.com/lavague-ai/LaVague) 但这是一个**Golang版本的全新增强实现**
 
 ### 动机
 
