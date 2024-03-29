@@ -20,6 +20,7 @@ type ChromeAgent struct {
 	Cfg   *Configs
 	Rag   *autog.Rag
 	Query string
+	LastHtml string
 	LastHtmlContext string
 	ShowLog  func (level int, content string)
 }
@@ -68,33 +69,36 @@ var shortHistory *autog.PromptItem =  &autog.PromptItem{
 
 		msgs := chromeAgent.GetShortHistory()
 
-		// HTML太大，不能完整的送给大模型，所以这里进行RAG增强检索，因为页面会刷新，所以每次都重新间索引
-		ShowAgentLog(1, fmt.Sprintf("Indexing HTML...\n"))
+		currentHtml := GetHtmlContext()
 
-		splitter := &rag.TextSplitter{
-			ChunkSize: chromeAgent.Cfg.ChunkSize,
-			Overlap: float64(chromeAgent.Cfg.ChunkOverlap)/float64(100.0),
-			BreakStartChars: []rune { '<' },
-			BreakEndChars:   []rune { '>' },
-		}
-
-		chromeAgent.Rag.EmbeddingCallback = func (stage autog.EmbeddingStage, texts []string, embeds []autog.Embedding, i, j int, finished, tried int, err error) bool {
-			if stage != autog.EmbeddingStageIndexing {
-				return tried < 1
+		if chromeAction.LastHtml != currentHtml {
+			// HTML太大，不能完整的送给大模型，所以这里进行RAG增强检索，因为页面会刷新，所以每次都重新间索引
+			ShowAgentLog(1, fmt.Sprintf("Indexing HTML...\n"))
+			splitter := &rag.TextSplitter{
+				ChunkSize: chromeAgent.Cfg.ChunkSize,
+				Overlap: float64(chromeAgent.Cfg.ChunkOverlap)/float64(100.0),
+				BreakStartChars: []rune { '<' },
+				BreakEndChars:   []rune { '>' },
 			}
-
+	
+			chromeAgent.Rag.EmbeddingCallback = func (stage autog.EmbeddingStage, texts []string, embeds []autog.Embedding, i, j int, finished, tried int, err error) bool {
+				if stage != autog.EmbeddingStageIndexing {
+					return tried < 1
+				}
+	
+				if err != nil {
+					ShowAgentLog(1, fmt.Sprintf("Embedding HTML (%d/%d) Retry...\n", len(texts), finished))
+					return tried < 1
+				}
+				ShowAgentLog(1, fmt.Sprintf("Embedding HTML (%d/%d) Done!\n", len(texts), finished))
+				return false
+			}
+	
+			err := chromeAgent.Rag.Indexing(cxt, "/html", currentHtml, splitter, true)
 			if err != nil {
-				ShowAgentLog(1, fmt.Sprintf("Embedding HTML (%d/%d) Retry...\n", len(texts), finished))
-				return tried < 1
+				ShowAgentLog(-1, fmt.Sprintf("RAG Indexing ERROR: %s\n", err))
+				return msgs
 			}
-			ShowAgentLog(1, fmt.Sprintf("Embedding HTML (%d/%d) Done!\n", len(texts), finished))
-			return false
-		}
-
-		err := chromeAgent.Rag.Indexing(cxt, "/html", GetHtmlContext(), splitter, true)
-		if err != nil {
-			ShowAgentLog(-1, fmt.Sprintf("RAG Indexing ERROR: %s\n", err))
-			return msgs
 		}
 
 		ShowAgentLog(1, fmt.Sprintf("Retrieval HTML...\n"))
@@ -102,6 +106,7 @@ var shortHistory *autog.PromptItem =  &autog.PromptItem{
 		scoredss, err  = chromeAgent.Rag.Retrieval(cxt, "/html", []string{query}, chromeAgent.Cfg.TopK)
 		if err != nil {
 			ShowAgentLog(-1, fmt.Sprintf("RAG Retrieval ERROR: %s\n", err))
+			chromeAction.LastHtml = ""
 			return msgs
 		}
 
@@ -113,6 +118,7 @@ var shortHistory *autog.PromptItem =  &autog.PromptItem{
 		}
 
 		chromeAgent.LastHtmlContext = content
+		chromeAction.LastHtml = currentHtml
 
 		ShowAgentLog(1, fmt.Sprintf("Sending...\n"))
 
