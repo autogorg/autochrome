@@ -75,26 +75,17 @@ func main() {
 	var sb strings.Builder
 	var multiline MultilineState
 
-	output.WriteStreamStart = func() *strings.Builder {
-		if output.AgentStage == autog.AsWaitResponse {
+	output.WriteContent = func(stage autog.AgentStage, stream autog.StreamStage, buf *strings.Builder, str string) {
+		if stage == autog.AsWaitResponse && stream == autog.StreamStageStart {
 			fmt.Printf(Yellow("## --- AI ---\n"))
-		}
-		return &strings.Builder{}
-	}
-	output.WriteStreamError = func(contentbuf *strings.Builder, status autog.LLMStatus, errstr string) {
-		fmt.Printf("\n%s\n", Red(errstr))
-	}
-	output.WriteStreamEnd = func(contentbuf *strings.Builder) {
-		if output.AgentStage == autog.AsWaitResponse {
-			fmt.Println()
-		}
-	}
-	output.WriteStreamDelta = func(contentbuf *strings.Builder, delta string) {
-		if output.AgentStage == autog.AsWaitResponse {
+		} else if stage == autog.AsWaitResponse && stream == autog.StreamStageDelta {
 			fmt.Print(Cyan(delta))
+		} else if stage == autog.AsWaitResponse && stream == autog.StreamStageEnd {
+			fmt.Println()
+		} else if stream == autog.StreamStageError {
+			fmt.Printf("\n%s\n", Red(errstr))
 		}
 	}
-
 
 	for {
 		line, err := scanner.Readline()
