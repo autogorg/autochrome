@@ -79,11 +79,11 @@ func main() {
 		if stage == autog.AsWaitResponse && stream == autog.StreamStageStart {
 			fmt.Printf(Yellow("## --- AI ---\n"))
 		} else if stage == autog.AsWaitResponse && stream == autog.StreamStageDelta {
-			fmt.Print(Cyan(delta))
+			fmt.Print(Cyan(str))
 		} else if stage == autog.AsWaitResponse && stream == autog.StreamStageEnd {
 			fmt.Println()
 		} else if stream == autog.StreamStageError {
-			fmt.Printf("\n%s\n", Red(errstr))
+			fmt.Printf("\n%s\n", Red(str))
 		}
 	}
 
